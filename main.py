@@ -14,7 +14,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 import xgboost as xgb
 
-# ---- Load and filter to Virginia only ----
+# Load and filter to Virginia
 print("Loading PM2.5 data...")
 pm = pd.read_csv('hourly_88101_2025.csv')
 pm = pm[pm['State Name'] == 'Virginia']
@@ -23,18 +23,18 @@ print("Loading Ozone data...")
 oz = pd.read_csv('hourly_44201_2025.csv')
 oz = oz[oz['State Name'] == 'Virginia']
 
-# ---- Keep only what we need ----
+# Keep only what is needed
 pm = pm[['Date Local','Time Local','Latitude','Longitude','Sample Measurement']].rename(columns={'Sample Measurement':'pm25'})
 oz = oz[['Date Local','Time Local','Latitude','Longitude','Sample Measurement']].rename(columns={'Sample Measurement':'o3'})
 
-# ---- Merge on date/time/location ----
+# Merge on date/time/location
 df = pd.merge(pm, oz, on=['Date Local','Time Local','Latitude','Longitude'])
 df['datetime'] = pd.to_datetime(df['Date Local'] + ' ' + df['Time Local'])
 df = df.sort_values('datetime').reset_index(drop=True)
 
 print(f"Rows after merge: {len(df)}")
 
-# ---- Feature engineering ----
+# Feature engineering 
 df['hour']        = df['datetime'].dt.hour
 df['day_of_week'] = df['datetime'].dt.dayofweek
 df['month']       = df['datetime'].dt.month
@@ -54,7 +54,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 
 print(f"Train size: {len(X_train)}, Test size: {len(X_test)}")
 
-# ---- Models ----
+# Models
 models = {
     'Linear Regression': LinearRegression(),
     'Random Forest':     RandomForestRegressor(n_estimators=100, max_depth=10, random_state=42, n_jobs=1),
@@ -93,14 +93,14 @@ for name, model in models.items():
     }
     print(f"  RMSE={rmse:.3f}  MAE={mae:.3f}  R2={r2:.4f}  Mem={mem_mb:.2f}MB  Inf={ms_per_sample:.4f}ms  Size={size_mb:.3f}MB")
 
-# ---- Save results table ----
+# Results table 
 rows = [{'Model':n,'RMSE':r['RMSE'],'MAE':r['MAE'],'R2':r['R2'],
          'Memory_MB':r['Memory_MB'],'Inference_ms':r['Inference_ms'],'Size_MB':r['Size_MB']}
         for n,r in results.items()]
 pd.DataFrame(rows).to_csv('results_table.csv', index=False)
 print("\nSaved results_table.csv")
 
-# ---- Plot ----
+# Plot 
 palette = ['#1a6faf','#c0392b','#27ae60','#e67e22']
 model_names = list(results.keys())
 fig, axes = plt.subplots(2, 2, figsize=(12, 9))
