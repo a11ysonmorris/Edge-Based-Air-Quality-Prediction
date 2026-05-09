@@ -1,0 +1,5 @@
+Model,RMSE,MAE,R2,Memory_MB,Inference_ms,Size_MB
+Linear Regression,3.832,2.286,0.3774,0.193,0.0008,0.001
+Random Forest,3.427,1.979,0.5019,0.636,0.0071,10.884
+Gradient Boosting,3.568,2.052,0.4603,0.53,0.0015,0.232
+XGBoost,3.428,1.994,0.5018,0.055,0.0001,0.159
